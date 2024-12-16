@@ -731,10 +731,10 @@ def main():
     glViewport(0, 0, width, height)
     init()
 
-    wall_texture = load_texture(r"C:\Users\esthe\Desktop\Grafi\PruebaTexturas\pared.jpg") #paredes
-    roof_texture = load_texture(r"C:\Users\esthe\Desktop\Grafi\PruebaTexturas\teja_cafe.jpeg") #tejado
-    door_texture = load_texture(r"C:\Users\esthe\Desktop\Grafi\PruebaTexturas\puerta.jpg") #puerta
-    window_texture = load_texture(r"C:\Users\esthe\Desktop\Grafi\PruebaTexturas\ventanas.jpeg") #ventanas
+    wall_texture = load_texture(r"pared.jpg") #paredes
+    roof_texture = load_texture(r"teja_cafe.jpeg") #tejado
+    door_texture = load_texture(r"puerta.jpg") #puerta
+    window_texture = load_texture(r"ventanas.jpeg") #ventanas
 
     madera_granero_texture = load_texture('madera_granero.jpg')
     madera_blanca_texture = load_texture('madera_blanca.jpg')
