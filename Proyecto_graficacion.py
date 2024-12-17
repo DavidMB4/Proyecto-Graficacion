@@ -1,6 +1,6 @@
 import glfw
 from OpenGL.GL import *
-from OpenGL.GLU import gluPerspective, gluLookAt, gluNewQuadric, gluSphere, gluCylinder, gluQuadricTexture
+from OpenGL.GLU import *
 from PIL import Image
 import sys
 from math import sin, cos, pi
@@ -642,6 +642,91 @@ def draw_granero(madera_texture, madera_blanca_texture, techo_texture):
     draw_ventana(5, madera_blanca_texture)
     draw_ventana(6, madera_blanca_texture)
 
+def draw_cylinder(texture):
+    """Dibuja un cilindro usando gluCylinder"""
+    glColor3f(1.0, 1.0, 1.0) 
+    glBindTexture(GL_TEXTURE_2D, texture)  # Vincula la textura
+    quad = gluNewQuadric()                    # Crea el objeto cuadrático
+    gluQuadricTexture(quad, GL_TRUE)          # Habilita las coordenadas de textura                 # Asegura el color blanco
+    gluCylinder(quad, 2, 2, 15.0, 32, 32)  # (obj, base, top, height, slices, stacks)
+    gluDeleteQuadric(quad)   
+
+    
+def draw_sphere(texture):
+    """Dibuja una esfera utilizando gluSphere."""
+    glColor3f(1.0, 1.0, 1.0)    
+    glBindTexture(GL_TEXTURE_2D, texture)  # Vincula la textura
+    quad = gluNewQuadric()                   # Crea el objeto cuadrático
+    gluQuadricTexture(quad, GL_TRUE)         # Habilita las coordenadas de textura             # Asegura el color blanco para mostrar la textura
+    gluSphere(quad, 2.0, 32, 32)             # Dibuja la esfera
+    gluDeleteQuadric(quad)  
+    
+def entrada_silo(texture, texture2):
+    glColor3f(1.0, 1.0, 1.0) 
+    glBindTexture(GL_TEXTURE_2D, texture)  # Vincula la textura
+    glBegin(GL_QUADS)
+    # Izquierda
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1, 0, -3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-1, 0, 1)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-1, 3, 1)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1, 3, -3)
+
+    # Derecha
+    glTexCoord2f(0.0, 0.0); glVertex3f(1, 0, -3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 0, 1)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 3, 1)
+    glTexCoord2f(0.0, 1.0); glVertex3f(1, 3, -3)
+    glEnd()
+    
+    glColor3f(1.0, 1.0, 1.0) 
+    glBindTexture(GL_TEXTURE_2D, texture2)
+    glBegin(GL_QUADS)
+    # Arriba
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1.5, 3, -3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 3, -3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 3, 1.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1.5, 3, 1.5)
+    glEnd()
+    
+def escalera(texture):
+    glColor3f(1.0, 1.0, 1.0)  
+    glBindTexture(GL_TEXTURE_2D, texture)  # Vincula la textura
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0, 0, -0)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-0, 0, 0.2)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-0.2, 15, 0.2)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0., 15, -0)
+    glEnd()
+    
+def draw_silo(metal_silo_texture, metal_silo2_texture):
+    
+    glPushMatrix()
+    glTranslatef(5.0, 15.0, -10.0)
+    glRotatef(90, 1.0, 0.0, 0.0)
+    draw_cylinder(metal_silo2_texture)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(5.0, 15.0, -10.0)
+    glRotatef(90, 1.0, 0.0, 0.0)
+    draw_sphere(metal_silo_texture)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(5.0, 0.0, -5.5)
+    entrada_silo(metal_silo2_texture, metal_silo_texture)
+    glPopMatrix()
+    
+    positions = [
+        (7, 0, -8.5),
+        (7, 0, -8)
+    ]
+    for pos in positions:
+        glPushMatrix()
+        glTranslatef(*pos)
+        glRotatef(180, 0.0, 1.0, 0.0)
+        escalera(metal_silo_texture)
+        glPopMatrix()
 
 def draw_suelo(texture_id):
     """Dibuja el campo de cultivo de vegetales con textura"""
@@ -1073,7 +1158,7 @@ def draw_zona_apicultura(base_panal_texturas, panal_texturas):
 
 def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
-                   texture_troncoManzano, base_panal_texturas, panal_texturas):
+                   texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture):
     """Dibuja la escena completa"""
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -1109,6 +1194,12 @@ def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_
     glPushMatrix()
     glTranslatef(*position_corral2)
     draw_corral_cerdo(tierra_pasto_texture, madera_valla_texture, lodo_texture)
+    glPopMatrix()
+    
+    position_silo = (15, 0, 11)
+    glPushMatrix()
+    glTranslatef(*position_silo)
+    draw_silo(metal_silo_texture, metal_silo2_texture)   
     glPopMatrix()
 
 
@@ -1247,6 +1338,8 @@ def main():
     tierra_pasto_texture = load_texture('tierra_pasto.jpg')
     madera_valla_texture = load_texture('madera_valla.jpg')
     lodo_texture = load_texture('lodo.jpg')
+    metal_silo_texture = load_texture('metal_silo.jpg')
+    metal_silo2_texture = load_texture('metal_silo2.jpg')
     
     suelo_texture = load_texture(r"suelo-texture.jpg")   # Textura para el campo de cultivo de vegetales
     vegetal_texture = load_texture(r"vegetal-texture.jpg") 
@@ -1264,7 +1357,7 @@ def main():
         process_input()  # Procesar teclas presionadas
         draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
-                   texture_troncoManzano, base_panal_texturas, panal_texturas)
+                   texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture)
         glfw.poll_events()
 
     glfw.terminate()
