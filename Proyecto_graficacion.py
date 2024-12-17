@@ -70,42 +70,43 @@ def draw_house(wall_texture, roof_texture, door_texture, window_texture):
     """Dibuja una casa con texturas"""
     # Paredes de la casa 
     walls = [
-        ([-3.0, 0, 1], [3.0, 0, 1], [3.0, 3, 1], [-3.0, 3, 1]),  # Frente
-        ([-3.0, 0, -1], [3.0, 0, -1], [3.0, 3, -1], [-3.0, 3, -1]),  # Atrás
-        ([-3.0, 0, -1], [-3.0, 0, 1], [-3.0, 3, 1], [-3.0, 3, -1]),  # Izquierda
-        ([3.0, 0, -1], [3.0, 0, 1], [3.0, 3, 1], [3.0, 3, -1])   # Derecha
+        ([-3.0, 0, 3.0], [3.0, 0, 3.0], [3.0, 3, 3.0], [-3.0, 3, 3.0]),  # Frente
+        ([-3.0, 0, -3.0], [3.0, 0, -3.0], [3.0, 3, -3.0], [-3.0, 3, -3.0]),  # Atrás
+        ([-3.0, 0, -3.0], [-3.0, 0, 3.0], [-3.0, 3, 3.0], [-3.0, 3, -3.0]),  # Izquierda
+        ([3.0, 0, -3.0], [3.0, 0, 3.0], [3.0, 3, 3.0], [3.0, 3, -3.0])   # Derecha
     ]
     tex_coords = [(0, 0), (1, 0), (1, 1), (0, 1)]
 
     for wall in walls:
         draw_textured_quad(wall, tex_coords, wall_texture)
 
-    # Techo 
+    # Techo (ajustado para coincidir con el ancho y largo)
     roof = [
-        ([-3.5, 3, 1], [3.5, 3, 1], [0, 5, 0]),  # Frente
-        ([-3.5, 3, -1], [3.5, 3, -1], [0, 5, 0]),  # Atrás
-        ([-3.5, 3, -1], [-3.5, 3, 1], [0, 5, 0]),  # Izquierda
-        ([3.5, 3, -1], [3.5, 3, 1], [0, 5, 0])   # Derecha
+        ([-3.5, 3, 3.5], [3.5, 3, 3.5], [0, 5, 0]),  # Frente
+        ([-3.5, 3, -3.5], [3.5, 3, -3.5], [0, 5, 0]),  # Atrás
+        ([-3.5, 3, -3.5], [-3.5, 3, 3.5], [0, 5, 0]),  # Izquierda
+        ([3.5, 3, -3.5], [3.5, 3, 3.5], [0, 5, 0])   # Derecha
     ]
     glBindTexture(GL_TEXTURE_2D, roof_texture)
     glBegin(GL_TRIANGLES)
     for tri in roof:
         for vertex in tri:
-            glTexCoord2f((vertex[0] + 3.5) / 7, (vertex[2] + 1) / 2)
+            glTexCoord2f((vertex[0] + 3.5) / 7, (vertex[2] + 3.5) / 7)
             glVertex3f(*vertex)
     glEnd()
 
-    # Puerta
-    door = [(-0.5, 0, 1.01), (0.4, 0, 1.01), (0.4, 1.5, 1.01), (-0.5, 1.5, 1.01)]
+    # Puerta (sin cambios)
+    door = [(-0.5, 0, 3.01), (0.4, 0, 3.01), (0.4, 1.5, 3.01), (-0.5, 1.5, 3.01)]
     draw_textured_quad(door, tex_coords, door_texture)
 
-    # Ventanas
+    # Ventanas (ajustadas a la nueva profundidad)
     windows = [
-        [(-1.8, 1.5, 1.01), (-0.9, 1.5, 1.01), (-0.9, 2.5, 1.01), (-1.8, 2.5, 1.01)],  # Izquierda
-        [(0.9, 1.5, 1.01), (1.8, 1.5, 1.01), (1.8, 2.5, 1.01), (0.9, 2.5, 1.01)]   # Derecha
+        [(-1.8, 1.5, 3.01), (-0.9, 1.5, 3.01), (-0.9, 2.5, 3.01), (-1.8, 2.5, 3.01)],  # Izquierda
+        [(0.9, 1.5, 3.01), (1.8, 1.5, 3.01), (1.8, 2.5, 3.01), (0.9, 2.5, 3.01)]   # Derecha
     ]
     for window in windows:
         draw_textured_quad(window, tex_coords, window_texture)
+        
         
 def valla_horizontal(texture):
     glBindTexture(GL_TEXTURE_2D, texture)
