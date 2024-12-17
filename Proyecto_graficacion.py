@@ -47,6 +47,7 @@ def init():
 def draw_ground():
     """Dibuja un plano para representar el suelo"""
     glBegin(GL_QUADS)
+    glColor3f(0.364, 0.690, 0.066)  
     glVertex3f(-100, 0, 100)
     glVertex3f(100, 0, 100)
     glVertex3f(100, 0, -100)
@@ -57,6 +58,7 @@ def draw_textured_quad(vertices, tex_coords, texture_id):
     """Dibuja un cuadrado con textura"""
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glBegin(GL_QUADS)
+    glColor3f(1, 1, 1)  
     for i in range(4):
         glTexCoord2f(*tex_coords[i])
         glVertex3f(*vertices[i])
@@ -637,8 +639,153 @@ def draw_granero(madera_texture, madera_blanca_texture, techo_texture):
     draw_ventana(5, madera_blanca_texture)
     draw_ventana(6, madera_blanca_texture)
 
+
+def draw_suelo(texture_id):
+    """Dibuja el campo de cultivo de vegetales con textura"""
+    glBindTexture(GL_TEXTURE_2D, texture_id)  # Vincula la textura
+    glBegin(GL_QUADS)
+    glColor3f(1, 1, 1)  
+
+    # Frente
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1, 0, 0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 0.5, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1, 0.5, 0.5)
+
+    # Atrás
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 0, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 0.5, -0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1, 0.5, -0.5)
+
+    # Izquierda
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-1, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-1, 0.5, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1, 0.5, -0.5)
+
+    # Derecha
+    glTexCoord2f(0.0, 0.0); glVertex3f(1, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 0.5, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(1, 0.5, -0.5)
+
+    # Arriba
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1, 0.5, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 0.5, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 0.5, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1, 0.5, 0.5)
+
+    # Abajo
+    glTexCoord2f(0.0, 0.0); glVertex3f(-1, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(1, 0, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(1, 0, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-1, 0, 0.5)
+
+    glEnd()
+
+def draw_vegetal(texture_id):
+    """Dibuja un vegetal con textura"""
+    glBindTexture(GL_TEXTURE_2D, texture_id) # Vincula la textura
+    glColor3f(1.0, 1.0, 1.0) # Color blanco para la textura
+    # Dibujar tallo
+    quad = gluNewQuadric()
+    gluQuadricTexture(quad, GL_TRUE)
+    glPushMatrix()
+    glTranslatef(0.0, 0.25, 0.0)
+    gluCylinder(quad, 0.05, 0.05, 0.5, 32, 32)
+    glPopMatrix()
+
+    # Dibujar hojas (esferas)
+    glPushMatrix()
+    glTranslatef(0.0, 0.75, 0.0)
+    gluSphere(quad, 0.1, 32, 32)
+    glTranslatef(0.1, 0.1, 0.0)
+    gluSphere(quad, 0.1, 32, 32)
+    glTranslatef(-0.2, 0.1, 0.0)
+    gluSphere(quad, 0.1, 32, 32)
+    glPopMatrix()
+
+def draw_huerto(suelo_texture, vegetal_texture):
+    """Dibuja un huerto de vegetales con campos de cultivo"""
+    glPushMatrix()
+
+    # Primera Fila
+    glTranslatef(3, 0, 0)
+    for i in range(3):
+        draw_suelo(suelo_texture)
+        glPushMatrix()
+        glTranslatef(0.4, 0, 0)
+        draw_vegetal(vegetal_texture)
+        glPopMatrix()
+        glTranslatef(-0.4, 0, 0)
+
+    # Segunda Fila
+    glTranslatef(0, 0, 1.5)
+    for i in range(3):
+        draw_suelo(suelo_texture)
+        glPushMatrix()
+        glTranslatef(0.4, 0, 0)
+        draw_vegetal(vegetal_texture)
+        glPopMatrix()
+        glTranslatef(-0.4, 0, 0)
+
+    glPopMatrix()
+    
+def draw_trunk(texture_id):
+    """Dibuja el tronco del árbol como un cilindro con textura."""
+    glPushMatrix()
+    glColor3f(1, 1, 1)  
+    glTranslatef(0.0, 0.0, 0.0)  
+    glRotatef(-90, 1, 0, 0)  
+
+    quadric = gluNewQuadric()
+    gluQuadricTexture(quadric, GL_TRUE)
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+    gluCylinder(quadric, 0.3, 0.3, 2.0, 32, 32)  
+    glPopMatrix()
+
+def draw_foliage():
+    """Dibuja las hojas del árbol como una esfera."""
+    glPushMatrix()
+    glColor3f(0.1, 0.8, 0.1)  
+    glTranslatef(0.0, 2.0, 0.0)  
+    quadric = gluNewQuadric()
+    gluSphere(quadric, 1.0, 32, 32)  
+    glPopMatrix()
+
+def draw_apples():
+    """Dibuja pequeñas esferas rojas representando manzanas."""
+    glColor3f(1.0, 0.0, 0.0)  
+    quadric = gluNewQuadric()
+
+    apple_positions = [
+        (0.5, 2.5, 0.3),
+        (-0.4, 2.3, -0.5),
+        (0.3, 2.7, -0.2),
+        (-0.2, 2.8, 0.6),
+        (0.6, 2.6, -0.4),
+        (-0.5, 2.4, 0.5)
+    ]
+
+    for pos in apple_positions:
+        glPushMatrix()
+        glTranslatef(*pos)  
+        gluSphere(quadric, 0.1, 16, 16)  
+        glPopMatrix()
+
+def draw_manzano(texture_id):
+    """Dibuja un manzano completo."""
+    glPushMatrix()
+    draw_trunk(texture_id)  
+    draw_foliage()
+    draw_apples()
+    glPopMatrix()
+
+
 def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
-                   techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture):
+                   techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
+                   texture_troncoManzano):
     """Dibuja la escena completa"""
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -658,29 +805,49 @@ def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_
         draw_house(wall_texture, roof_texture, door_texture, window_texture)
         glPopMatrix()
     
-    positions_granero_corral = [
-        (20, 0, 10),
-        (10, 0, 10),
-        (30, 0, 10)
+    position_granero = (20, 0, 10)
+    glPushMatrix()
+    glTranslatef(*position_granero)  # Mover la casa a la posición actual       
+    draw_granero(madera_granero_texture, madera_blanca_texture, techo_granero_texture)
+    glPopMatrix()
+    
+    position_corral1 = (10, 0, 10)
+    glPushMatrix()
+    glTranslatef(*position_corral1)
+    draw_corral_oveja(tierra_pasto_texture, madera_valla_texture)
+    glPopMatrix()
+    
+    position_corral2 = (30, 0, 10)
+    glPushMatrix()
+    glTranslatef(*position_corral2)
+    draw_corral_cerdo(tierra_pasto_texture, madera_valla_texture, lodo_texture)
+    glPopMatrix()
+
+
+    positions_huerto = [
+        (40, -0.35, 40), (40, -0.35, 44), (40, -0.35, 48), (40, -0.35, 52),
+        (36, -0.35, 40), (36, -0.35, 44), (36, -0.35, 48), (36, -0.35, 52),
+        (32, -0.35, 40), (32, -0.35, 44), (32, -0.35, 48), (32, -0.35, 52)
+    ]            
+    for pos in positions_huerto:
+        glPushMatrix()
+        glTranslatef(*pos)  # Mover la casa a la posición actual     
+        draw_huerto(suelo_texture, vegetal_texture)
+        glPopMatrix()
+
+
+    positions_manzano = [
+        (27, 0, 40), (27, 0, 44), (27, 0, 48), (27, 0, 52),
+        (23, 0, 40), (23, 0, 44), (23, 0, 48), (23, 0, 52), 
+        (19, 0, 40), (19, 0, 44), (19, 0, 48), (19, 0, 52)
     ]
-    for pos in positions_granero_corral:
-        if pos == (20, 0, 10):
-            glPushMatrix()
-            glTranslatef(*pos)  # Mover la casa a la posición actual       
-            draw_granero(madera_granero_texture, madera_blanca_texture, techo_granero_texture)
-            glPopMatrix()
-        
-        if pos == (10, 0, 10):
-            glPushMatrix()
-            glTranslatef(*pos)
-            draw_corral_oveja(tierra_pasto_texture, madera_valla_texture)
-            glPopMatrix()
-        
-        if pos == (30, 0, 10):
-            glPushMatrix()
-            glTranslatef(*pos)
-            draw_corral_cerdo(tierra_pasto_texture, madera_valla_texture, lodo_texture)
-            glPopMatrix()
+
+    for pos in positions_manzano:
+        glPushMatrix()
+        glTranslatef(*pos)
+        draw_manzano(texture_troncoManzano)
+        glPopMatrix()
+    
 
     draw_ground()  # Dibuja el suelo
 
@@ -743,6 +910,11 @@ def main():
     madera_valla_texture = load_texture('madera_valla.jpg')
     lodo_texture = load_texture('lodo.jpg')
     
+    suelo_texture = load_texture(r"suelo-texture.jpg")   # Textura para el campo de cultivo de vegetales
+    vegetal_texture = load_texture(r"vegetal-texture.jpg") 
+    
+    texture_troncoManzano = load_texture('tree-branch-512x512.png')
+    
     # Configurar callback de teclado
     glfw.set_key_callback(window, key_callback)
 
@@ -750,7 +922,8 @@ def main():
     while not glfw.window_should_close(window):
         process_input()  # Procesar teclas presionadas
         draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
-                   techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture)
+                   techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
+                   texture_troncoManzano)
         glfw.poll_events()
 
     glfw.terminate()
