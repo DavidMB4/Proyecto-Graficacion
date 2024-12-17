@@ -6,6 +6,8 @@ import sys
 from math import sin, cos, pi
 import math
 
+from networkx import draw
+
 # Variables globales para la cámara
 camera_pos = [4.0, 3.0, 8.0]  # Posición de la cámara
 camera_target = [0.0, 3.0, 0.0]  # Punto al que mira
@@ -782,10 +784,295 @@ def draw_manzano(texture_id):
     draw_apples()
     glPopMatrix()
 
+def draw_tallo_fresal():
+    """Dibuja el tallo de la planta"""
+    glPushMatrix()
+    glColor3f(0.4, 0.8, 0.2)  # Verde claro para el tallo
+    glTranslatef(0.0, 0.0, 0.0)  # Posicionar el tallo
+    glRotatef(-90, 1, 0, 0)  # Rota para orientar el cilindro verticalmente
+    quadric = gluNewQuadric()
+    gluCylinder(quadric, 0.05, 0.05, 0.5, 32, 32)  # Tallos delgados
+    glPopMatrix()
+
+def draw_hojas_fresal():
+    """Dibuja las hojas de la planta como esferas pequeñas"""
+    glColor3f(0.1, 0.5, 0.1)  # Verde oscuro para las hojas
+    quadric = gluNewQuadric()
+    
+    leaf_positions = [
+        (0.2, 0.5, 0.0),   # Derecha
+        (-0.2, 0.5, 0.0),  # Izquierda
+        (0.0, 0.5, 0.2),   # Adelante
+        (0.0, 0.5, -0.2),  # Atrás
+    ]
+    
+    for x, y, z in leaf_positions:
+        glPushMatrix()
+        glTranslatef(x, y, z)
+        gluSphere(quadric, 0.2, 32, 32)  # Tamaño de las hojas
+        glPopMatrix()
+
+def draw_fresas():
+    """Dibuja las fresas como pequeñas esferas rojas"""
+    glColor3f(1.0, 0.0, 0.0)  # Rojo para las fresas
+    quadric = gluNewQuadric()
+    
+    strawberry_positions = [
+        (0.15, 0.3, 0.1),
+        (-0.1, 0.35, -0.1),
+        (0.05, 0.4, -0.15),
+        (-0.15, 0.3, 0.05),
+    ]
+    
+    for x, y, z in strawberry_positions:
+        glPushMatrix()
+        glTranslatef(x, y, z)
+        gluSphere(quadric, 0.1, 32, 32)  # Tamaño de las fresas
+        glPopMatrix()
+
+def draw_fresal():
+    """Dibuja una planta de fresas completa"""
+    glPushMatrix()
+    draw_tallo_fresal()           # Dibuja el tallo
+    draw_hojas_fresal()         # Dibuja las hojas
+    draw_fresas()   # Dibuja las fresas
+    glPopMatrix()
+
+def draw_textured_trunk(texture_id):
+    """Dibuja el tronco del pino con textura."""
+    glPushMatrix()
+    glColor3f(1, 1, 1)  
+    glTranslatef(0.0, 0.0, 0.0)  
+    glRotatef(-90, 1, 0, 0)  
+
+    quadric = gluNewQuadric()
+    gluQuadricTexture(quadric, GL_TRUE)
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+    gluCylinder(quadric, 0.3, 0.1, 2.0, 32, 32)  
+    glPopMatrix()
+
+def draw_foliage_pine():
+    """Dibuja el follaje del pino como conos apilados"""
+    glColor3f(0.1, 0.6, 0.1)  # Verde oscuro para el follaje
+    quadric = gluNewQuadric()
+
+    # Dibujar tres conos de diferentes tamaños
+    foliage_levels = [
+        (0.6, 1.2, 0.8),  # (Radio base, Altura, Traslación en Y)
+        (0.4, 1.0, 1.6),
+        (0.2, 0.8, 2.4),
+    ]
+    
+    for base, height, y_translation in foliage_levels:
+        glPushMatrix()
+        glTranslatef(0.0, y_translation, 0.0)  # Elevar cada cono
+        glRotatef(-90, 1, 0, 0)  # Rota para orientar el cono verticalmente
+        gluCylinder(quadric, base, 0.0, height, 32, 32)  # Base más grande y punta cerrada
+        glPopMatrix()
+
+def draw_pine(texture_id):
+    """Dibuja un pino completo."""
+    glPushMatrix()
+    draw_textured_trunk(texture_id)
+    draw_foliage_pine()
+    glPopMatrix()
+
+def draw_caja_base_panal(textura_id):
+    """ Dibuja las bases donde se colocaran los panales para asimilar una zona de Apicultura"""
+    glBindTexture(GL_TEXTURE_2D, textura_id) #  Vincula la textura
+    glBegin(GL_QUADS)
+    glColor3f(1.0, 1.0, 1.0)  # blanco para no alterar la textura
+
+    # Frente
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, 0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 1, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 1, 0.5)
+
+    # Atrás
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 1, -0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 1, -0.5)
+
+    # Izquierda
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-0.4, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-0.4, 1, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 1, -0.5)
+
+    # Derecha
+    glTexCoord2f(0.0, 0.0); glVertex3f(0.4, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 1, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(0.4, 1, -0.5)
+
+    # Arriba
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 1, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 1, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 1, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 1, 0.5)
+
+    # Abajo
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 0, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 0, 0.5)
+    glEnd()
+
+def draw_base_inferior_panal(textura_id):
+    """ Dibuja la base inferior de los panales"""
+    glBindTexture(GL_TEXTURE_2D, textura_id) #  Vincula la textura
+    glBegin(GL_QUADS)
+    glColor3f(1.0, 1.0, 1.0)
+
+    # Frente
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.3, -0.15, 0.3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.3, -0.15, 0.3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.3, 0.15, 0.3)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.3, 0.15, 0.3)
+
+    # Atrás
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.3, -0.15, -0.3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.3, -0.15, -0.3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.3, 0.15, -0.3)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.3, 0.15, -0.3)
+
+    # Izquierda
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.3, -0.15, -0.3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-0.3, -0.15, 0.3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-0.3, 0.15, 0.3)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.3, 0.15, -0.3)
+
+    # Derecha
+    glTexCoord2f(0.0, 0.0); glVertex3f(0.3, -0.15, -0.3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.3, -0.15, 0.3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.3, 0.15, 0.3)
+    glTexCoord2f(0.0, 1.0); glVertex3f(0.3, 0.15, -0.3)
+
+    # Arriba
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.3, 0.15, -0.3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.3, 0.15, -0.3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.3, 0.15, 0.3)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.3, 0.15, 0.3)
+
+    # Abajo
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.3, -0.15, -0.3)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.3, -0.15, -0.3)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.3, -0.15, 0.3)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.3, -0.15, 0.3)
+    glEnd()
+
+def draw_base_intermedia_panal(textura_id):
+    """ Dibuja la base intermedia de los panales"""
+    glBindTexture(GL_TEXTURE_2D, textura_id) #  Vincula la textura
+    glBegin(GL_QUADS)
+    glColor3f(1.0, 1.0, 1.0)
+
+    # Frente
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, 0.4)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, 0.4)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 0.25, 0.4)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 0.25, 0.4)
+
+    # Atrás
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, -0.4)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, -0.4)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 0.25, -0.4)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 0.25, -0.4)
+
+    # Izquierda
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, -0.4)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-0.4, 0, 0.4)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-0.4, 0.25, 0.4)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 0.25, -0.4)
+
+    # Derecha
+    glTexCoord2f(0.0, 0.0); glVertex3f(0.4, 0, -0.4)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, 0.4)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 0.25, 0.4)
+    glTexCoord2f(0.0, 1.0); glVertex3f(0.4, 0.25, -0.4)
+
+    # Arriba
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0.25, -0.4)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0.25, -0.4)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 0.25, 0.4)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 0.25, 0.4)
+
+    # Abajo
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.4, 0, -0.4)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.4, 0, -0.4)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.4, 0, 0.4)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.4, 0, 0.4)
+    glEnd()
+
+def draw_base_superior_panal(textura_id):
+    """ Dibuja la base superior de los panales"""
+    glBindTexture(GL_TEXTURE_2D, textura_id) #  Vincula la textura
+    glBegin(GL_QUADS)
+    glColor3f(1.0, 1.0, 1.0)
+
+    # Frente
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0, 0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.5, 0.25, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, 0.25, 0.5)
+
+    # Atrás
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.5, 0.25, -0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, 0.25, -0.5)
+
+    # Izquierda
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(-0.5, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(-0.5, 0.25, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, 0.25, -0.5)
+
+    # Derecha
+    glTexCoord2f(0.0, 0.0); glVertex3f(0.5, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0, 0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.5, 0.25, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(0.5, 0.25, -0.5)
+
+    # Arriba
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0.25, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.25, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.5, 0.25, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, 0.25, 0.5)
+
+    # Abajo
+    glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0, -0.5)
+    glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0, -0.5)
+    glTexCoord2f(1.0, 1.0); glVertex3f(0.5, 0, 0.5)
+    glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, 0, 0.5)
+    glEnd()
+
+def draw_panal(textura_id):
+    draw_base_inferior_panal(textura_id)
+    glTranslatef(0, 0.1, 0)
+    draw_base_intermedia_panal(textura_id)
+    glTranslatef(0, 0.2, 0)
+    draw_base_superior_panal(textura_id)
+    glTranslatef(0, 0.2, 0)
+    draw_base_superior_panal(textura_id)
+    glTranslatef(0, 0.2, 0)
+    draw_base_intermedia_panal(textura_id)
+    glTranslatef(0, 0.3, 0)
+    draw_base_inferior_panal(textura_id)
+
+def draw_zona_apicultura(base_panal_texturas, panal_texturas):
+    """ Dibuja la zona de apicultura"""
+    glPushMatrix()
+    draw_caja_base_panal(base_panal_texturas)
+    glTranslatef(0, 1.1, 0)
+    draw_panal(panal_texturas)
+    glPopMatrix()
 
 def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
-                   texture_troncoManzano):
+                   texture_troncoManzano, base_panal_texturas, panal_texturas):
     """Dibuja la escena completa"""
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -846,6 +1133,56 @@ def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_
         glPushMatrix()
         glTranslatef(*pos)
         draw_manzano(texture_troncoManzano)
+        glPopMatrix()
+
+    positions_fresal = [
+        (40, 0, 27), (40, 0, 25), (40, 0, 23), 
+        (38, 0, 27), (38, 0, 25), (38, 0, 23),
+        (36, 0, 27), (36, 0, 25), (36, 0, 23),
+        (34, 0, 27), (34, 0, 25), (34, 0, 23),
+        (32, 0, 27), (32, 0, 25), (32, 0, 23),
+        (30, 0, 27), (30, 0, 25), (30, 0, 23),
+    ]
+
+    for pos in positions_fresal:
+        glPushMatrix()
+        glTranslatef(*pos)
+        draw_fresal()
+        glPopMatrix()
+
+    positions_pino = [
+        (-1, 0, -40),(-1, 0, -38),(-1, 0, -36),
+        (-2, 0, -40),(-2, 0, -38),(-2, 0, -36),
+        (-3, 0, -40),(-3, 0, -38),(-3, 0, -36),
+        (-4, 0, -40),(-4, 0, -38),(-4, 0, -36),
+        (-5, 0, -40),(-5, 0, -38),(-5, 0, -36),
+        (-6, 0, -40),(-6, 0, -38),(-6, 0, -36),
+        (-7, 0, -40),(-7, 0, -38),(-7, 0, -36),
+        (-8, 0, -40),(-8, 0, -38),(-8, 0, -36),
+        (-9, 0, -40),(-9, 0, -38),(-9, 0, -36),
+        (-10, 0, -40),(-10, 0, -38),(-10, 0, -36),
+        (-11, 0, -40),(-11, 0, -38),(-11, 0, -36),
+        (-12, 0, -40),(-12, 0, -38),(-12, 0, -36),
+        (-13, 0, -40),(-13, 0, -38),(-13, 0, -36),
+        (-14, 0, -40),(-14, 0, -38),(-14, 0, -36),
+        (-15, 0, -40),(-15, 0, -38),(-15, 0, -36),
+        (-16, 0, -40),(-16, 0, -38),(-16, 0, -36)
+    ]
+
+    for pos in positions_pino:
+        glPushMatrix()
+        glTranslatef(*pos)
+        draw_pine(texture_troncoManzano)
+        glPopMatrix()
+
+    positions_base_panal = [
+        (30, 0, 40), (30, 0, 44), (30, 0, 48), (30, 0, 52)
+    ]
+
+    for pos in positions_base_panal:
+        glPushMatrix()
+        glTranslatef(*pos)
+        draw_zona_apicultura(base_panal_texturas, panal_texturas)
         glPopMatrix()
     
 
@@ -912,8 +1249,11 @@ def main():
     
     suelo_texture = load_texture(r"suelo-texture.jpg")   # Textura para el campo de cultivo de vegetales
     vegetal_texture = load_texture(r"vegetal-texture.jpg") 
+
+    base_panal_texturas = load_texture(r'panal-abejas-textura.jpg') # Texturas para la base y el panal de abejas
+    panal_texturas = load_texture(r'colmena-entrada-textura.jpg') # Texturas para el panal de abejas
     
-    texture_troncoManzano = load_texture('tree-branch-512x512.png')
+    texture_troncoManzano = load_texture(r'tree-branch-512x512.png')
     
     # Configurar callback de teclado
     glfw.set_key_callback(window, key_callback)
@@ -923,7 +1263,7 @@ def main():
         process_input()  # Procesar teclas presionadas
         draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
-                   texture_troncoManzano)
+                   texture_troncoManzano, base_panal_texturas, panal_texturas)
         glfw.poll_events()
 
     glfw.terminate()
