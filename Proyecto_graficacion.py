@@ -2889,7 +2889,7 @@ def main():
     angulo_th = 3.9
     angulo_pi = 2.2
     saltos = 0.15
-    movimiento = 0.8
+    movimiento = 3
     eje_x = 50.0
     eje_y = 35.0
     eje_z = 35.0
@@ -2961,6 +2961,8 @@ def main():
 
     # Inicializar OpenCV y flujo óptico (del primer main)
     cap = cv.VideoCapture(0)
+    cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     if not cap.isOpened():
         print("No se pudo abrir la cámara")
         return
@@ -2970,14 +2972,14 @@ def main():
         print("No se pudo leer el primer frame de la cámara")
         return
 
-    first_frame = cv.resize(first_frame, (600, 600))
+    first_frame = cv.resize(first_frame, (1200, 720))
     prev_gray = cv.cvtColor(first_frame, cv.COLOR_BGR2GRAY)
     lk_params = dict(winSize=(15, 15), maxLevel=2,
                      criteria=(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
 
     p0 = np.array([
-        [150, 200],
-        [420, 200]
+        [350, 200],
+        [1020, 200]
     ], dtype=np.float32)
     p0 = p0[:, np.newaxis, :]
 
@@ -2989,7 +2991,7 @@ def main():
         ret, frame = cap.read()
         if not ret:
             break
-        frame = cv.resize(frame, (600, 600))
+        frame = cv.resize(frame, (1200, 720))
         frame = cv.flip(frame, 1)
         gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
@@ -3018,38 +3020,44 @@ def main():
                         if dist_magnitud > umbral_gesto:
                             if i == 0:
                                 if a - c > umbral_gesto:
-                                    mover_adelante()
+                                    mover_izquierda()
+                                    
                                 elif a - c < -umbral_gesto:
-                                    mover_atras()
+                                    mover_derecha()
+                                    
 
                                 if b - d > umbral_gesto:
-                                    mover_izquierda()
+                                    mover_adelante()
                                 elif b - d < -umbral_gesto:
-                                    mover_derecha()
+                                    mover_atras()
+                                    
                             elif i == 1:
                                 if a - c > umbral_gesto:
-                                    girar_abajo()
-                                elif a - c < -umbral_gesto:
-                                    girar_arriba()
-                                if b - d > umbral_gesto:
-                                    girar_izquierda()
-                                elif b - d < -umbral_gesto:
                                     girar_derecha()
+                                    
+                                elif a - c < (-umbral_gesto-5):
+                                    girar_izquierda()
+                                if b - d > umbral_gesto:
+                                    
+                                    girar_abajo()
+                                elif b - d < -umbral_gesto:
+                                    girar_arriba()
+                                    
 
                             actualizar_direccion()
             else:
                 # Si se pierden los puntos, reestablecer p0 a su posición original
                 p0 = np.array([
-                    [150, 200],
-                    [420, 200]
+                    [350, 200],
+                    [1020, 200]
                 ], dtype=np.float32)
                 p0 = p0[:, np.newaxis, :]
                 prev_gray = gray_frame.copy()
         else:
             # Si no hay p1, reiniciamos p0
             p0 = np.array([
-                [150, 200],
-                [420, 200]
+                [350, 200],
+                [1020, 200]
             ], dtype=np.float32)
             p0 = p0[:, np.newaxis, :]
             prev_gray = gray_frame.copy()
