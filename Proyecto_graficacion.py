@@ -11,8 +11,8 @@ import numpy as np
 import cv2 as cv
 
 # Variables globales para la cámara
-camera_pos = [4.0, 35.0, 8.0]  # Posición de la cámara
-camera_target = [3.0, 5.0, 3.0]  # Punto al que mira
+camera_pos = [4.0, 35.0, 30.0]  # Posición de la cámara
+camera_target = [3.0, 35.0, 30.0]  # Punto al que mira
 camera_up = [0.0, 1.0, 0.0]  # Vector hacia arriba
 
 # Variables para el movimiento
@@ -56,10 +56,26 @@ def draw_ground():
     """Dibuja un plano para representar el suelo"""
     glBegin(GL_QUADS)
     glColor3f(0.364, 0.690, 0.066)  
-    glVertex3f(-100, 0, 100)
-    glVertex3f(100, 0, 100)
-    glVertex3f(100, 0, -100)
-    glVertex3f(-100, 0, -100)
+    glVertex3f(-50, 0, 70)
+    glVertex3f(50, 0, 70)
+    glVertex3f(50, 0, -50)
+    glVertex3f(-50, 0, -50)
+    glEnd()
+    
+    glBegin(GL_QUADS)
+    glColor3f(0.8, 0.6, 0.4)  
+    glVertex3f(0, 0.1, 15)
+    glVertex3f(40, 0.1, 15)
+    glVertex3f(40, 0.1, 20)
+    glVertex3f(0, 0.1, 20)
+    glEnd()
+    
+    glBegin(GL_QUADS)
+    glColor3f(0.8, 0.6, 0.4)  
+    glVertex3f(0, 0.1, 15)
+    glVertex3f(10, 0.1, 15)
+    glVertex3f(10, 0.1, 45)
+    glVertex3f(0, 0.1, 45)
     glEnd()
 
 def draw_textured_quad(vertices, tex_coords, texture_id):
@@ -1534,11 +1550,38 @@ def draw_scene(
         glTranslatef(*pos)
         draw_fresal()
         glPopMatrix()
-
     positions_pino = [
-        (-16, 0, -36),
-        (45, 0, 21), (-1, 0, 40)
+        (-16, 0, -36), (-20, 0, -31), (-25, 0, -36), (-30, 0, -31), (-35, 0, -36), (-40, 0, -31),
+        (-16, 0, -36), (-11, 0, -31), (-6, 0, -36), (-1, 0, -31), (4, 0, -36), 
+        (9, 0, -31), (14, 0, -36), (19, 0, -31), (24, 0, -36), (29, 0, -31), 
+        (34, 0, -36), (39, 0, -31), (44, 0, -36), (49, 0, -31),
+        
+        # Primera fila
+        (-16, 0, -36), (-20, 0, -31), (-25, 0, -36), (-30, 0, -31), (-35, 0, -36),
+        # Segunda fila
+        (-16, 0, -21), (-20, 0, -26), (-25, 0, -21), (-30, 0, -26), (-35, 0, -21),
+        # Tercera fila
+        (-16, 0, -6), (-20, 0, -11), (-25, 0, -6), (-30, 0, -11), (-35, 0, -6),
+        # Cuarta fila
+        (-16, 0, 9), (-20, 0, 4), (-25, 0, 9), (-30, 0, 4), (-35, 0, 9),
+        # Quinta fila
+        (-16, 0, 24), (-20, 0, 19), (-25, 0, 24), (-30, 0, 19), (-35, 0, 24),
+        # Sexta fila
+        (-16, 0, 39), (-20, 0, 34), (-25, 0, 39), (-30, 0, 34), (-35, 0, 39),
+        # Séptima fila
+        (-16, 0, 54), (-20, 0, 49), (-25, 0, 54), (-30, 0, 49), (-35, 0, 54),
+        # Octava fila
+        (-16, 0, 69), (-20, 0, 64),
+
+        
+        
+        (-16, 0, 60), (-20, 0, 62), (-25, 0, 60), (-30, 0, 62), (-35, 0, 60), (-40, 0, 62),
+        (-16, 0, 60), (-11, 0, 62), (-6, 0, 60), (-1, 0, 62), (4, 0, 60), 
+        (9, 0, 62), (14, 0, 60), (19, 0, 62), (24, 0, 60), (29, 0, 62), 
+        (34, 0, 60), (39, 0, 62), (44, 0, 60), (49, 0, 62),
+        (45, 0, 21), (-10, 0, 35)
     ]
+
     for pos in positions_pino:
         glPushMatrix()
         glTranslatef(*pos)
@@ -1580,8 +1623,12 @@ def draw_scene(
     chicken_tractor(texture)
     glPopMatrix()
 
-    # Dibujo del pollito
+
     draw_pollito(pollito_pos, angulo_rot)
+    
+    # Dibujo del pollito
+    draw_pollito_estatico((0, 0, 1))
+
 
     # Posicionamiento y dibujo de la vaca y el cerdito
     positions_vacas = [
@@ -1646,7 +1693,9 @@ def scale_vertex(vertex):
 
 
 def patas_pollito():
+    glBegin(GL_QUADS)
     glColor3f(1.0, 1.0, 0.0)  # Amarillo
+    
     #P1
     glVertex3f(*scale_vertex((0,0,0)))
     glVertex3f(*scale_vertex((0,0.1,0)))
@@ -1804,11 +1853,12 @@ def patas_pollito():
     glVertex3f(*scale_vertex((0.3,0.5,0.55)))
     glVertex3f(*scale_vertex((0.3,0.5,0.45)))
     glVertex3f(*scale_vertex((0.3,0,0.45)))
+    glEnd()
 
 
 def cuerpo_pollito():
-
-    glColor3f(1, 1, 1)  # Blanco
+    glBegin(GL_QUADS)
+    glColor3f(1, 1, 0)  # Blanco
     
     #p14
     glVertex3f(*scale_vertex((-0.1,0.5,0)))
@@ -2063,7 +2113,7 @@ def cuerpo_pollito():
     glVertex3f(-0.3,0.9,0.2)
     glVertex3f(-0.3,0.9,0.4)
     glVertex3f(-0.4,0.9,0.4)
-
+    glEnd()
 
 
 def pata_vaca(texture):
@@ -2483,12 +2533,9 @@ def cerdito(texture):
 
 
 def pollito():
-    glBegin(GL_QUADS)
-    glColor3f(1.0, 1.0, 0.0)  # Amarillo
     patas_pollito()
     cuerpo_pollito()
-    
-    glEnd()
+
 
 
 def chicken_tractor(texture):
@@ -2503,7 +2550,7 @@ def chicken_tractor(texture):
     glBindTexture(GL_TEXTURE_2D, texture)
     # Dibuja el tractor
     glBegin(GL_QUADS)
-    glColor3f(0.36, 0.25, 0.20)
+    glColor3f(1, 1, 1)
     
     
     # Derecha
@@ -2698,12 +2745,22 @@ def avanzar_izq_der(is_izq):
 
 def actualizar_posicion_pollito(pollito_pos, direccion, limite, angulo_rot):
     """Actualiza la posición del pollito y su rotación si cambia de dirección"""
-    pollito_pos[0] += 0.05 * direccion[0]  # Actualizar posición en X
-    if pollito_pos[0] > limite or pollito_pos[0] < -limite:  # Cambiar dirección en X
+    pollito_pos[0] += 2.25 * direccion[0]  # Actualizar posición en X
+    if pollito_pos[0] > 38 or pollito_pos[0] < 2:  # Cambiar dirección en X
         direccion[0] *= -1  # Cambiar dirección
         angulo_rot[0] += 180  # Girar el pollito 180 grados
         angulo_rot[0] %= 360  # Asegurar que el ángulo esté en el rango [0, 360)
     return pollito_pos, direccion, angulo_rot
+
+
+
+def draw_pollito_estatico(pollito_pos):
+    """Dibuja el pollito en la posición especificada con su rotación"""
+    glPushMatrix()
+    glTranslatef(*pollito_pos)  # Mover el pollito a su posición
+    pollito()
+    glPopMatrix()
+
 
 def draw_pollito(pollito_pos, angulo_rot):
     """Dibuja el pollito en la posición especificada con su rotación"""
@@ -2783,7 +2840,6 @@ def key_callback(window, key, scancode, action, mods):
     """Manejo de eventos del teclado para mover la cámara"""
     if action == glfw.PRESS or action == glfw.REPEAT:
         if key == glfw.KEY_W:
-            print("w")
             mover_adelante()
         elif key == glfw.KEY_S:
             mover_atras()
@@ -2834,11 +2890,11 @@ def main():
     angulo_pi = 2.2
     saltos = 0.15
     movimiento = 0.8
-    eje_x = 10.0
-    eje_y = 2.0
-    eje_z = 15.0
+    eje_x = 50.0
+    eje_y = 35.0
+    eje_z = 35.0
 
-    # Dirección inicial de la cámara
+    # Dirección inicial de la cámara|
     center_x = radio * math.sin(angulo_pi) * math.cos(angulo_th)
     center_y = radio * math.cos(angulo_pi)
     center_z = radio * math.sin(angulo_pi) * math.sin(angulo_th)
@@ -2898,9 +2954,9 @@ def main():
     texture_techo_invernadero = load_texture("techo_invernadero.jpeg")
 
     # Variables de la posición del pollito (del primer main)
-    pollito_pos = [0.0, 0.0, 0.0]  # [x, y, z]
-    direccion = [0.05]  # Dirección del movimiento del pollito
-    limite = 1.5
+    pollito_pos = [15.0, 0.0, 17.0]  # [x, y, z]
+    direccion = [0.1]  # Dirección del movimiento del pollito
+    limite = 30
     angulo_rot = [180]
 
     # Inicializar OpenCV y flujo óptico (del primer main)
@@ -3012,6 +3068,7 @@ def main():
             texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture, textura_pared,
             textura_techo, textura_puerta, texture_pared_invernadero, texture_techo_invernadero
         )
+        
 
         glfw.poll_events()
 
