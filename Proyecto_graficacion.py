@@ -946,7 +946,7 @@ def draw_textured_trunk(texture_id):
     quadric = gluNewQuadric()
     gluQuadricTexture(quadric, GL_TRUE)
     glBindTexture(GL_TEXTURE_2D, texture_id)
-    gluCylinder(quadric, 0.3, 0.1, 2.0, 32, 32)  
+    gluCylinder(quadric, 0.75, 0.25, 5.0, 32, 32)  # Aumentado 2.5 veces
     glPopMatrix()
 
 def draw_foliage_pine():
@@ -956,9 +956,9 @@ def draw_foliage_pine():
 
     # Dibujar tres conos de diferentes tamaños
     foliage_levels = [
-        (0.6, 1.2, 0.8),  # (Radio base, Altura, Traslación en Y)
-        (0.4, 1.0, 1.6),
-        (0.2, 0.8, 2.4),
+        (1.5, 3.0, 2.0),  # (Radio base, Altura, Traslación en Y)
+        (1.0, 2.5, 4.0),
+        (0.5, 2.0, 6.0),
     ]
     
     for base, height, y_translation in foliage_levels:
@@ -971,9 +971,11 @@ def draw_foliage_pine():
 def draw_pine(texture_id):
     """Dibuja un pino completo."""
     glPushMatrix()
+    glScalef(2.5, 2.5, 2.5)  # Escalar todo el pino 2.5 veces
     draw_textured_trunk(texture_id)
     draw_foliage_pine()
     glPopMatrix()
+
 
 def draw_caja_base_panal(textura_id):
     """ Dibuja las bases donde se colocaran los panales para asimilar una zona de Apicultura"""
@@ -1168,10 +1170,158 @@ def draw_zona_apicultura(base_panal_texturas, panal_texturas):
     draw_panal(panal_texturas)
     glPopMatrix()
 
+def draw_techo_invernadero(textura_id):
+    """Dibuja el techo completo del invernadero con texturas"""
+    glBindTexture(GL_TEXTURE_2D, textura_id)
+    glColor4f(0.5, 0.9, 1.0, 0.6)  # Vidrio translúcido
+
+    # Triángulos laterales (izquierdo y derecho)
+    glBegin(GL_TRIANGLES)
+
+    # Lado izquierdo
+    glTexCoord2f(0.0, 0.0)  # Coordenadas de textura para cada vértice
+    glVertex3f(-2, 2, -2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(-2, 2, 2)
+    glTexCoord2f(0.5, 1.0)
+    glVertex3f(0, 3, 0)
+
+    # Lado derecho
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(2, 2, -2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(2, 2, 2)
+    glTexCoord2f(0.5, 1.0)
+    glVertex3f(0, 3, 0)
+
+    glEnd()
+
+    # Planos inclinados frontal y trasero
+    glBegin(GL_QUADS)
+
+    # Plano frontal
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-2, 2, 2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(2, 2, 2)
+    glTexCoord2f(0.5, 1.0)
+    glVertex3f(0, 3, 0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-2, 2, 2)
+
+    # Plano trasero
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-2, 2, -2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(2, 2, -2)
+    glTexCoord2f(0.5, 1.0)
+    glVertex3f(0, 3, 0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-2, 2, -2)
+
+    glEnd()
+
+
+
+def draw_puerta_invernadero(textura_id):
+    """Dibuja la puerta del invernadero con texturas"""
+    glBindTexture(GL_TEXTURE_2D, textura_id)
+    glColor4f(0.5, 0.9, 1.0, 0.8)  # Vidrio ligeramente más opaco
+
+    # Panel de vidrio de la puerta
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0)  # Coordenadas de textura
+    glVertex3f(-0.5, 0.0, 2)  # Parte inferior izquierda
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(0.5, 0.0, 2)   # Parte inferior derecha
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(0.5, 1.5, 2)   # Parte superior derecha
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-0.5, 1.5, 2)  # Parte superior izquierda
+    glEnd()
+
+    # Marco de la puerta (no tiene textura)
+    glColor3f(0.3, 0.3, 0.3)
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex3f(-0.5, 0.0, 2)
+    glVertex3f(-0.5, 1.5, 2)
+    glVertex3f(0.5, 0.0, 2)
+    glVertex3f(0.5, 1.5, 2)
+    glVertex3f(-0.5, 1.5, 2)
+    glVertex3f(0.5, 1.5, 2)
+    glEnd()
+
+
+def draw_paredes_invernadero(textura_id):
+    """Dibuja todas las paredes del invernadero con texturas"""
+    glBindTexture(GL_TEXTURE_2D, textura_id)
+    glColor4f(0.5, 0.9, 1.0, 0.6)  # Vidrio translúcido
+
+    # Paredes laterales
+    glBegin(GL_QUADS)
+
+    # Lado izquierdo
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-2, 0.0, -2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(-2, 2, -2)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(-2, 2, 2)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-2, 0.0, 2)
+
+    # Lado derecho
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(2, 0.0, -2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(2, 2, -2)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(2, 2, 2)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(2, 0.0, 2)
+
+    glEnd()
+
+    # Pared trasera
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-2, 0.0, -2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(2, 0.0, -2)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(2, 2, -2)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-2, 2, -2)
+    glEnd()
+
+    # Pared frontal
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-2, 0.0, 2)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(2, 0.0, 2)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(2, 2, 2)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-2, 2, 2)
+    glEnd()
+
+
+
+def draw_greenhouse(texture_pared_invernadero, texture_techo_invernadero, door_texture):
+    """Dibuja un invernadero completo con diferentes texturas"""
+    glPushMatrix()
+    draw_paredes_invernadero(texture_pared_invernadero)  # Textura para paredes
+    draw_techo_invernadero(texture_techo_invernadero)    # Textura para techo
+    draw_puerta_invernadero(door_texture)  # Textura para puerta
+    glPopMatrix()
+
+
 def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
                    texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture, textura_pared, 
-                   textura_techo, textura_puerta):
+                   textura_techo, textura_puerta, texture_pared_invernadero, texture_techo_invernadero):
     """Dibuja la escena completa"""
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -1263,22 +1413,8 @@ def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_
         glPopMatrix()
 
     positions_pino = [
-        (-1, 0, -40),(-1, 0, -38),(-1, 0, -36),
-        (-2, 0, -40),(-2, 0, -38),(-2, 0, -36),
-        (-3, 0, -40),(-3, 0, -38),(-3, 0, -36),
-        (-4, 0, -40),(-4, 0, -38),(-4, 0, -36),
-        (-5, 0, -40),(-5, 0, -38),(-5, 0, -36),
-        (-6, 0, -40),(-6, 0, -38),(-6, 0, -36),
-        (-7, 0, -40),(-7, 0, -38),(-7, 0, -36),
-        (-8, 0, -40),(-8, 0, -38),(-8, 0, -36),
-        (-9, 0, -40),(-9, 0, -38),(-9, 0, -36),
-        (-10, 0, -40),(-10, 0, -38),(-10, 0, -36),
-        (-11, 0, -40),(-11, 0, -38),(-11, 0, -36),
-        (-12, 0, -40),(-12, 0, -38),(-12, 0, -36),
-        (-13, 0, -40),(-13, 0, -38),(-13, 0, -36),
-        (-14, 0, -40),(-14, 0, -38),(-14, 0, -36),
-        (-15, 0, -40),(-15, 0, -38),(-15, 0, -36),
-        (-16, 0, -40),(-16, 0, -38),(-16, 0, -36)
+       (-16, 0, -36),
+        (45, 0, 21),(-1,0,40)
     ]
 
     for pos in positions_pino:
@@ -1296,6 +1432,17 @@ def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_
         glTranslatef(*pos)
         draw_zona_apicultura(base_panal_texturas, panal_texturas)
         glPopMatrix()
+    
+    positions_invernadero = [
+        (2, 0, 9)
+    ]
+
+    for pos in positions_invernadero:
+        glPushMatrix()
+        glTranslatef(*pos)
+        draw_greenhouse(texture_pared_invernadero, texture_techo_invernadero, door_texture)
+        glPopMatrix()
+
     
 
     draw_ground()  # Dibuja el suelo
@@ -1372,6 +1519,8 @@ def main():
     panal_texturas = load_texture(r'colmena-entrada-textura.jpg') # Texturas para el panal de abejas
     
     texture_troncoManzano = load_texture(r'tree-branch-512x512.png')
+    texture_pared_invernadero = load_texture(r'paredes_vidrio.jpeg')
+    texture_techo_invernadero = load_texture(r'techo_invernadero.jpeg')
     
     # Configurar callback de teclado
     glfw.set_key_callback(window, key_callback)
@@ -1382,7 +1531,7 @@ def main():
         draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
                    texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture, textura_pared, 
-                   textura_techo, textura_puerta)
+                   textura_techo, textura_puerta, texture_pared_invernadero, texture_techo_invernadero)
         glfw.poll_events()
 
     glfw.terminate()
