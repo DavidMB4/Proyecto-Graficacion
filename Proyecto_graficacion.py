@@ -106,7 +106,33 @@ def draw_house(wall_texture, roof_texture, door_texture, window_texture):
     ]
     for window in windows:
         draw_textured_quad(window, tex_coords, window_texture)
-        
+
+def draw_cobertizo(textura_pared, textura_techo, textura_puerta):
+    """Dibuja una casa cuadrada más pequeña con paredes, techo plano y puerta"""
+    coord_texturas = [(0, 0), (1, 0), (1, 1), (0, 1)]  # Coordenadas de textura
+
+    # Paredes de la casa
+    paredes = [
+        ([-1.8, 0, 1.8], [1.8, 0, 1.8], [1.8, 1.8, 1.8], [-1.8, 1.8, 1.8]),  # Frente
+        ([-1.8, 0, -1.8], [1.8, 0, -1.8], [1.8, 1.8, -1.8], [-1.8, 1.8, -1.8]),  # Atrás
+        ([-1.8, 0, -1.8], [-1.8, 0, 1.8], [-1.8, 1.8, 1.8], [-1.8, 1.8, -1.8]),  # Izquierda
+        ([1.8, 0, -1.8], [1.8, 0, 1.8], [1.8, 1.8, 1.8], [1.8, 1.8, -1.8])  # Derecha
+    ]
+    for pared in paredes:
+        draw_textured_quad(pared, coord_texturas, textura_pared)
+
+    # Techo plano
+    techo = [
+        [-2.0, 1.8, -2.0],  # Esquina trasera izquierda
+        [-2.0, 1.8, 2.0],   # Esquina frontal izquierda
+        [2.0, 1.8, 2.0],    # Esquina frontal derecha
+        [2.0, 1.8, -2.0]    # Esquina trasera derecha
+    ]
+    draw_textured_quad(techo, coord_texturas, textura_techo)
+
+    # Puerta
+    puerta = [(-0.4, 0, 1.81), (0.4, 0, 1.81), (0.4, 1.2, 1.81), (-0.4, 1.2, 1.81)]  # Puerta
+    draw_textured_quad(puerta, coord_texturas, textura_puerta)        
         
 def valla_horizontal(texture):
     glBindTexture(GL_TEXTURE_2D, texture)
@@ -1144,7 +1170,8 @@ def draw_zona_apicultura(base_panal_texturas, panal_texturas):
 
 def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
-                   texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture):
+                   texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture, textura_pared, 
+                   textura_techo, textura_puerta):
     """Dibuja la escena completa"""
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -1163,6 +1190,13 @@ def draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_
         glRotatef(90, 0.0, 1.0, 0.0)   
         draw_house(wall_texture, roof_texture, door_texture, window_texture)
         glPopMatrix()
+    
+    position_cobertizo = (-5, 0, 18)
+    glPushMatrix()
+    glTranslatef(*position_cobertizo)  # Mover la casa a la posición actual
+    glRotatef(90, 0.0, 1.0, 0.0)       
+    draw_cobertizo(textura_pared, textura_techo, textura_puerta)
+    glPopMatrix()
     
     position_granero = (20, 0, 10)
     glPushMatrix()
@@ -1317,6 +1351,10 @@ def main():
     roof_texture = load_texture(r"teja_cafe.jpeg") #tejado
     door_texture = load_texture(r"puerta.jpg") #puerta
     window_texture = load_texture(r"ventanas.jpeg") #ventanas
+    
+    textura_pared = load_texture(r"paredes_cobertizo.jpg")
+    textura_techo = load_texture(r"techo_cobertizo_metal.jpg")
+    textura_puerta = load_texture(r"porton.jpg")
 
     madera_granero_texture = load_texture('madera_granero.jpg')
     madera_blanca_texture = load_texture('madera_blanca.jpg')
@@ -1343,7 +1381,8 @@ def main():
         process_input()  # Procesar teclas presionadas
         draw_scene(wall_texture, roof_texture, door_texture, window_texture, madera_granero_texture, madera_blanca_texture, 
                    techo_granero_texture, tierra_pasto_texture, madera_valla_texture, lodo_texture, suelo_texture, vegetal_texture,
-                   texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture)
+                   texture_troncoManzano, base_panal_texturas, panal_texturas, metal_silo_texture, metal_silo2_texture, textura_pared, 
+                   textura_techo, textura_puerta)
         glfw.poll_events()
 
     glfw.terminate()
